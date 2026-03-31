@@ -52,7 +52,7 @@ public class ProductoDataLoader {
                 // Por defecto no están eliminados
                 producto.setEstaEliminado(false);
 
-                repository.save(producto);
+                repository.save(producto); //comentamos para probar la lista vacia y el codigo 200ok
             }
             
             System.out.println(">> Se han precargado " + cantidad + " productos de prueba en H2.");

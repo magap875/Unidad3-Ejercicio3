@@ -15,7 +15,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/productos/**", "/h2-console/**").permitAll()
-                        .anyRequest().authenticated()
+                        .anyRequest().authenticated() //permitAll()
                 )
                 .httpBasic(Customizer.withDefaults());
 

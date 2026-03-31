@@ -15,6 +15,8 @@ public class BaseResponse<T> {
     private final String message;
     private final List<String> errors;
     private final String timestamp;
+    private int status;
+    private String path;
 
     public static <T> BaseResponse<T> ok(T data, String message) {
         return BaseResponse.<T>builder()
