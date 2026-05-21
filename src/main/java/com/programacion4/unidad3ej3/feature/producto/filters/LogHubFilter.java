@@ -1,14 +1,10 @@
 package com.programacion4.unidad3ej3.feature.producto.filters;
 
 import java.io.IOException;
-
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.filter.OncePerRequestFilter;
 import com.programacion4.unidad3ej3.feature.producto.dtos.request.LogRequestDto;
+import com.programacion4.unidad3ej3.feature.producto.services.interfaces.domain.ILogClientService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,15 +15,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class LogHubFilter extends OncePerRequestFilter {
 
-    private final RestTemplate restTemplate;
-
-    private static final String LOGHUB_URL =
-            "http://localhost:8080/logs";
-
-    private static final String API_KEY =
-            "0ff5ea29-a2d1-4043-b5c7-4776db70b7d7";
-
-    private static final Long APP_ID = 7L;
+    private final ILogClientService logClientService;
 
     @Override
     protected void doFilterInternal(
@@ -42,12 +30,10 @@ public class LogHubFilter extends OncePerRequestFilter {
 
             LogRequestDto dto = new LogRequestDto();
 
-            dto.setAppId(APP_ID);
+            dto.setAppId(7L);
 
             dto.setLogLevel(
-                    response.getStatus() >= 400
-                            ? "ERROR"
-                            : "INFO");
+                    response.getStatus() >= 400 ? "ERROR" : "INFO");
 
             dto.setMessage(
                     request.getMethod()
@@ -56,24 +42,10 @@ public class LogHubFilter extends OncePerRequestFilter {
                             + " -> "
                             + response.getStatus());
 
-            HttpHeaders headers = new HttpHeaders();
-
-            headers.setContentType(MediaType.APPLICATION_JSON);
-
-            headers.set("X-API-KEY", API_KEY);
-
-            HttpEntity<LogRequestDto> entity =
-                    new HttpEntity<>(dto, headers);
-
-            restTemplate.postForEntity(
-                    LOGHUB_URL,
-                    entity,
-                    Void.class);
+            logClientService.sendLog(dto);
 
         } catch (Exception e) {
-
-            System.out.println(
-                    "Error enviando log a LogHub");
+            System.out.println("Error enviando log a LogHub");
         }
     }
 }
